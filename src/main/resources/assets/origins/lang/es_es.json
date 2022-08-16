@@ -181,10 +181,10 @@
   "key.origins.secondary_active": "Poder Activo (Secundario)",
   "key.origins.view_origin": "Ver Origen",
   
-  "text.autoconfig.origins.title":   "origins Configuration",
-  "text.autoconfig.origins.option.xOffset": "Cooldown Bar Offset X",
-  "text.autoconfig.origins.option.yOffset": "Cooldown Bar Offset Y",
-  "text.autoconfig.origins.option.phantomizedOverlayStrength": "Phantomized Overlay Strength",
+  "text.autoconfig.origins.title":   "Configuración de Orígenes",
+  "text.autoconfig.origins.option.xOffset": "Compensación de la barra de enfriamiento X",
+  "text.autoconfig.origins.option.yOffset": "Compensación de la barra de enfriamiento Y",
+  "text.autoconfig.origins.option.phantomizedOverlayStrength": "Fuerza de superposición fantasmal",
   
   "item.origins.orb_of_origin": "Orbe de Orígenes",
   "item.origins.orb_of_origin.layer_generic": "Te deja escoger un nuevo %s.",
@@ -212,7 +212,7 @@
   "origins.gui.badge.active": "Habilidad activa. Presione %s para activarla.",
   "origins.gui.badge.toggle": "Alternar con %s.",
   "origins.gui.badge.recipe.crafting.shaped": "Receta de elaboración (con forma) proporcionada por el poder:",
-  "origins.gui.badge.recipe.crafting.shapeless": "Receta de elaboración (sin forma) proporcionada por el poder:"
+  "origins.gui.badge.recipe.crafting.shapeless": "Receta de elaboración (sin forma) proporcionada por el poder:",
   
   "origins.gui.unbound_key": "§ono asignado§r",
   
