@@ -7,7 +7,7 @@ issueTrackerURL="https://github.com/EdwinMindcraft/origins-architectury/issues"
 modId="origins"
 version="${version}"
 displayName="Origins"
-#logoFile=
+logoFile= "origins_icon.png"
 authors="Apace"
 description='''
 This mod adds several origins with passive abilities to the game, which you can choose from at the beginning of the game.
