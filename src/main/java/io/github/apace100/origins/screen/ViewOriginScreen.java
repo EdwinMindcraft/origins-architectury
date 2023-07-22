@@ -36,7 +36,7 @@ public class ViewOriginScreen extends OriginDisplayScreen {
 		this.originLayers = new ArrayList<>(origins.size());
 
 		origins.forEach((layer, origin) -> {
-			ItemStack displayItem = origin.getIcon().copy();
+			ItemStack displayItem = origin.getIcon();
 			if (displayItem.getItem() == Items.PLAYER_HEAD) {
 				if (!displayItem.hasTag() || !Objects.requireNonNull(displayItem.getTag()).contains("SkullOwner")) {
 					displayItem.getOrCreateTag().putString("SkullOwner", player.getDisplayName().getString());
