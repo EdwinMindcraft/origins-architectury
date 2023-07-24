@@ -183,6 +183,12 @@ public class OriginsEventHandler {
 		event.getOriginal().invalidateCaps(); // Unload capabilities.
 	}
 
+    @SubscribeEvent
+    public static void playerChangedDimensions(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (event.getEntity() instanceof ServerPlayer)
+            IOriginContainer.get(event.getEntity()).ifPresent(IOriginContainer::synchronize);
+    }
+
 	@SubscribeEvent
 	public static void onPlayerTickEnd(TickEvent.PlayerTickEvent event) {
 		if (event.phase == TickEvent.Phase.END) {
