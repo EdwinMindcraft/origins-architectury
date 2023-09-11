@@ -218,9 +218,12 @@ public class OriginDisplayScreen extends Screen {
 		}
         graphics.blit(WINDOW, this.guiLeft, this.guiTop, 0, 0, windowWidth, windowHeight);
 		if (this.origin.isBound()) {
+            graphics.pose().pushPose();
+            graphics.pose().translate(0, 0, 5);
 			this.renderOriginName(graphics);
 			RenderSystem.setShaderTexture(0, WINDOW);
 			this.renderOriginImpact(graphics, mouseX, mouseY);
+            graphics.pose().popPose();
 			Component title = this.getTitleText();
 			graphics.drawCenteredString(this.font, title.getString(), this.width / 2, this.guiTop - 15, 0xFFFFFF);
 		}
@@ -292,7 +295,7 @@ public class OriginDisplayScreen extends Screen {
 		List<FormattedCharSequence> descLines = this.font.split(orgDesc, textWidth);
 		for (FormattedCharSequence line : descLines) {
 			if (y >= startY - 18 && y <= endY + 12) {
-                graphics.drawString(this.font, line, x + 2, y - 6, 0xCCCCCC);
+                graphics.drawString(this.font, line, x + 2, y - 6, 0xCCCCCC, false);
 			}
 			y += 12;
 		}
@@ -302,7 +305,7 @@ public class OriginDisplayScreen extends Screen {
 			for (FormattedCharSequence line : drawLines) {
 				y += 12;
 				if (y >= startY - 24 && y <= endY + 12) {
-                    graphics.drawString(this.font, line, x + 2, y, 0xCCCCCC);
+                    graphics.drawString(this.font, line, x + 2, y, 0xCCCCCC, false);
 				}
 			}
 			y += 14;
@@ -319,7 +322,7 @@ public class OriginDisplayScreen extends Screen {
 				Component desc = p.getData().getDescription();
 				List<FormattedCharSequence> drawLines = this.font.split(desc, textWidth);
 				if (y >= startY - 24 && y <= endY + 12) {
-					graphics.drawString(this.font, name, x, y, 0xFFFFFF);
+					graphics.drawString(this.font, name, x, y, 0xFFFFFF, false);
 					int tw = this.font.width(name);
 					Collection<Badge> badges = BadgeManager.getPowerBadges(id.get());
 					int xStart = x + tw + 4;
@@ -334,7 +337,7 @@ public class OriginDisplayScreen extends Screen {
 				for (FormattedCharSequence line : drawLines) {
 					y += 12;
 					if (y >= startY - 24 && y <= endY + 12) {
-                        graphics.drawString(this.font, line, x + 2, y, 0xCCCCCC);
+                        graphics.drawString(this.font, line, x + 2, y, 0xCCCCCC, false);
 					}
 				}
 				y += 14;
