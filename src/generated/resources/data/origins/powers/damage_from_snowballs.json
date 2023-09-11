@@ -7,7 +7,8 @@
   "damage_armor_condition": "apoli:allow",
   "damage_condition": {
     "type": "apoli:projectile",
-    "projectile": "minecraft:snowball"
+    "projectile": "minecraft:snowball",
+    "projectile_condition": "apoli:allow"
   },
   "hidden": true,
   "modifier": {

@@ -1,4 +1,4 @@
-// 1.20.1	2023-09-08T08:45:14.0336823	Power Generator: origins
+// 1.20.1	2023-09-11T20:08:50.9543359	Power Generator: origins
 ed26de00378b6cbf98d22dc3f997a414005a09f9 data/origins/powers/aerial_combatant.json
 002373b088ee22ef1877183f91e7b4dfbf989fbf data/origins/powers/air_from_potions.json
 15cbfaeaec1b5b44eca80866747a0551e07dca4c data/origins/powers/aquatic.json
@@ -13,7 +13,7 @@ fb066445f2f3a0994279952a65cfd7d475a4fdb3 data/origins/powers/carnivore.json
 2ef9ea4060dd44dbc105e51110a9c6759a0019ca data/origins/powers/climbing.json
 4d35341eaf80a4e22d58a06ea4dd2c1a42fcd86c data/origins/powers/conduit_power_on_land.json
 0419728b7da023285ccc2176621fbb59871e20b2 data/origins/powers/damage_from_potions.json
-38aecc7e82f26f66593b85d9ea49c6f2443c383d data/origins/powers/damage_from_snowballs.json
+b6cab901710773642a31cb8908a51283c091a682 data/origins/powers/damage_from_snowballs.json
 5bcb8234e666895cae6d926c6629875689bec350 data/origins/powers/fire_immunity.json
 ec81a9404040e7fecc091fe9020498d548c24c8e data/origins/powers/flame_particles.json
 cc30dfe68515be15226ebf3a06460ac510863812 data/origins/powers/fragile.json
