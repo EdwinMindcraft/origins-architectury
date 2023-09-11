@@ -120,7 +120,7 @@ public class Origin {
     }
 
     public Stream<Holder<ConfiguredPower<?, ?>>> getValidPowers() {
-        return this.powers.stream().flatMap(HolderSet::stream).filter(holder -> holder.unwrapKey().isPresent() && !ApoliEventHandler.isPowerDisabled(holder.unwrapKey().get().location()));
+        return this.powers.stream().flatMap(HolderSet::stream).filter(holder -> holder.isBound() && !ApoliEventHandler.isPowerDisabled(holder.value().getRegistryName()));
     }
 
     public ItemStack getIcon() {
