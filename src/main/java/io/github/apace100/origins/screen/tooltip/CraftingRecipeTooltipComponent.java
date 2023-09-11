@@ -50,11 +50,12 @@ public class CraftingRecipeTooltipComponent implements ClientTooltipComponent {
 				int slotY = pMouseY + 8 + row * 18;
 				ItemStack stack = this.inputs.get(index);
                 pGuiGraphics.renderItem(stack, slotX, slotY, index);
-                pGuiGraphics.renderTooltip(pFont, stack, slotX, slotY);
+                pGuiGraphics.renderItemDecorations(pFont, stack, slotX, slotY);
 			}
 		}
         pGuiGraphics.renderItem(this.output, pMouseX + 101, pMouseY + 25, 10);
-	}
+        pGuiGraphics.renderItemDecorations(pFont, this.output, pMouseX + 101, pMouseY + 25);
+    }
 
 	public void drawBackGround(GuiGraphics graphics, int x, int y) {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
