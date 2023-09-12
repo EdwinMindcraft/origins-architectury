@@ -115,12 +115,13 @@ public class Origin {
         return this.powers;
     }
 
+    // Holders are not yet bound when this is ran, and we only need an id to check if the power is disabled.
     public int getPowerAmount() {
         return (int) this.powers.stream().flatMap(HolderSet::stream).filter(holder -> holder.unwrapKey().isPresent() && !ApoliEventHandler.isPowerDisabled(holder.unwrapKey().get().location())).count();
     }
 
     public Stream<Holder<ConfiguredPower<?, ?>>> getValidPowers() {
-        return this.powers.stream().flatMap(HolderSet::stream).filter(holder -> holder.isBound() && !ApoliEventHandler.isPowerDisabled(holder.value().getRegistryName()));
+        return this.powers.stream().flatMap(HolderSet::stream).filter(holder -> holder.unwrapKey().isPresent() && !ApoliEventHandler.isPowerDisabled(holder.unwrapKey().get().location()));
     }
 
     public ItemStack getIcon() {
