@@ -6,8 +6,6 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.origins.api.capabilities.IOriginContainer;
 import io.github.edwinmindcraft.origins.client.OriginsClient;
 import io.github.edwinmindcraft.origins.client.OriginsClientUtils;
-import io.github.edwinmindcraft.origins.client.screen.WaitForPowersScreen;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Player;
@@ -41,10 +39,12 @@ public record S2COpenWaitingForPowersScreen(boolean isOrb, Set<ResourceKey<Confi
 	public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
 		contextSupplier.get().enqueueWork(() -> {
 			Player player = DistExecutor.safeCallWhenOn(Dist.CLIENT, () -> OriginsClientUtils::getClientPlayer);
-			if (player == null) return;
+            if (player == null) return;
 			IOriginContainer.get(player).ifPresent(x -> {
                 if (!this.nonReadyPowers().isEmpty()) {
-                    Minecraft.getInstance().setScreen(new WaitForPowersScreen(OriginsClient.SHOW_DIRT_BACKGROUND, this.nonReadyPowers(), this.isOrb()));
+                    OriginsClient.WAITING_FOR_POWERS.set(true);
+                    OriginsClient.WAITING_POWERS.addAll(this.nonReadyPowers());
+                    OriginsClient.SELECTION_WAS_ORB = this.isOrb();
                 }
             });
 		});
