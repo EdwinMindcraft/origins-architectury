@@ -208,6 +208,7 @@
   "origins.gui.impact.medium": "Medium",
   "origins.gui.impact.high": "High",
   "origins.gui.version_mismatch": "This server is running a different version of Origins (v%1$s) which is incompatible with the one you have installed (v%2$s).",
+  "origins.gui.waiting_for_powers": "Waiting for powers to resolve",
 
   "origins.gui.badge.active": "Active ability, use with %s.",
   "origins.gui.badge.toggle": "Toggle with %s.",

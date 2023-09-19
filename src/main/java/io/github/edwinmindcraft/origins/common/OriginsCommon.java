@@ -30,7 +30,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import java.util.function.Function;
 
 public class OriginsCommon {
-	private static final String NETWORK_VERSION = "1.1";
+	private static final String NETWORK_VERSION = "1.2";
 
 	public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(Origins.identifier("network"), () -> NETWORK_VERSION, NETWORK_VERSION::equals, NETWORK_VERSION::equals);
 
@@ -57,6 +57,9 @@ public class OriginsCommon {
 		CHANNEL.messageBuilder(S2CSynchronizeBadges.class, message++, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(S2CSynchronizeBadges::encode).decoder(withLogging(S2CSynchronizeBadges::decode))
 				.consumerNetworkThread(S2CSynchronizeBadges::handle).add();
+        CHANNEL.messageBuilder(S2COpenWaitingForPowersScreen.class, message++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(S2COpenWaitingForPowersScreen::encode).decoder(withLogging(S2COpenWaitingForPowersScreen::decode))
+                .consumerNetworkThread(S2COpenWaitingForPowersScreen::handle).add();
 
 		CHANNEL.messageBuilder(C2SChooseRandomOrigin.class, message++, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(C2SChooseRandomOrigin::encode).decoder(withLogging(C2SChooseRandomOrigin::decode))
@@ -67,6 +70,9 @@ public class OriginsCommon {
 		CHANNEL.messageBuilder(C2SAcknowledgeOrigins.class, message++, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(C2SAcknowledgeOrigins::encode).decoder(withLogging(C2SAcknowledgeOrigins::decode))
 				.consumerNetworkThread(C2SAcknowledgeOrigins::handle).add();
+        CHANNEL.messageBuilder(C2SFinalizeNowReadyPowers.class, message++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(C2SFinalizeNowReadyPowers::encode).decoder(withLogging(C2SFinalizeNowReadyPowers::decode))
+                .consumerNetworkThread(C2SFinalizeNowReadyPowers::handle).add();
 
 		Origins.LOGGER.debug("Registered {} packets", message);
 	}

@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.origins.common.network;
 
+import io.github.apace100.apoli.Apoli;
 import io.github.apace100.origins.Origins;
 import io.github.edwinmindcraft.origins.api.OriginsAPI;
 import io.github.edwinmindcraft.origins.api.capabilities.IOriginContainer;
@@ -53,12 +54,19 @@ public record C2SChooseOrigin(ResourceLocation layer, ResourceLocation origin) {
 					Origins.LOGGER.warn("Player {} tried to choose invalid origin: {} for layer: {}", sender.getScoreboardName(), this.origin(), this.layer());
 					container.setOrigin(layer.get(), OriginRegisters.EMPTY.getHolder().orElseThrow());
 				} else {
-					boolean hadOriginBefore = container.hadAllOrigins();
-					boolean hadAllOrigins = container.hasAllOrigins();
-					container.setOrigin(layer.get(), origin.get());
-					container.checkAutoChoosingLayers(false);
-					if (container.hasAllOrigins() && !hadAllOrigins)
-						container.onChosen(hadOriginBefore);
+                    try {
+                        boolean hadOriginBefore = container.hadAllOrigins();
+                        boolean hadAllOrigins = container.hasAllOrigins();
+                        container.setOrigin(layer.get(), origin.get());
+                        container.checkAutoChoosingLayers(false);
+                        if (container.hasAllOrigins() && !hadAllOrigins)
+                            container.onChosen(hadOriginBefore);
+                    } catch (Exception e) {
+                        Apoli.LOGGER.error(e.toString());
+                        for (StackTraceElement el : e.getStackTrace()) {
+                            Apoli.LOGGER.error("\tat "+ el);
+                        }
+                    }
 				}
 				container.synchronize();
 				OriginsCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sender), new S2CConfirmOrigin(this.layer(), this.origin()));

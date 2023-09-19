@@ -58,7 +58,7 @@ public class OriginDisplayScreen extends Screen {
 	protected static final int windowHeight = 182;
 	protected int scrollPos = 0;
 	private int currentMaxScroll = 0;
-	private float time = 0;
+	protected float time = 0;
 
 	protected int guiTop, guiLeft;
 
@@ -253,7 +253,7 @@ public class OriginDisplayScreen extends Screen {
 		this.itemRenderer.renderGuiItem(is, this.guiLeft + 15, this.guiTop + 15);
 	}
 
-	private void renderWindowBackground(PoseStack matrices, int offsetYStart, int offsetYEnd) {
+	protected void renderWindowBackground(PoseStack matrices, int offsetYStart, int offsetYEnd) {
 		int border = 13;
 		int endX = this.guiLeft + windowWidth - border;
 		int endY = this.guiTop + windowHeight - border;
