@@ -10,6 +10,7 @@ import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import io.github.edwinmindcraft.origins.api.OriginsAPI;
 import io.github.edwinmindcraft.origins.api.capabilities.IOriginContainer;
 import io.github.edwinmindcraft.origins.api.origin.OriginLayer;
+import io.github.edwinmindcraft.origins.client.screen.WaitForPowersScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraftforge.api.distmarker.Dist;
@@ -37,6 +38,12 @@ public class OriginsClientEventHandler {
 						OriginsClient.AWAITING_DISPLAY.set(false);
 					}
 				});
+			}
+
+			if (OriginsClient.WAITING_FOR_POWERS.get()) {
+				Minecraft.getInstance().setScreen(new WaitForPowersScreen(OriginsClient.SHOW_DIRT_BACKGROUND, OriginsClient.WAITING_POWERS, OriginsClient.SELECTION_WAS_ORB));
+				OriginsClient.WAITING_POWERS.clear();
+				OriginsClient.WAITING_FOR_POWERS.set(false);
 			}
 
 			if (OriginsClient.OPEN_NEXT_LAYER.get()) {

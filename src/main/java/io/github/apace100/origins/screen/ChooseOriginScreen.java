@@ -96,7 +96,6 @@ public class ChooseOriginScreen extends OriginDisplayScreen {
 		}
 		this.addRenderableWidget(Button.builder(Component.translatable(Origins.MODID + ".gui.select"), b -> {
 			ResourceLocation layer = this.layerList.get(this.currentLayerIndex).unwrap().map(Optional::of, OriginsAPI.getLayersRegistry(null)::getResourceKey).map(ResourceKey::location).orElseThrow();
-			this.openNextLayerScreen();
 			if (this.currentOrigin == this.originSelection.size())
 				OriginsCommon.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SChooseRandomOrigin(layer));
 			else {
@@ -106,6 +105,8 @@ public class ChooseOriginScreen extends OriginDisplayScreen {
 				else
 					Origins.LOGGER.error("Unregistered origin found for layer {}: {}", layer, this.getCurrentOrigin());
 			}
+			// The below is necessary for opening the Waiting For Powers Screen.
+			this.openNextLayerScreen();
 		}).bounds(this.guiLeft + windowWidth / 2 - 50, this.guiTop + windowHeight + 5, 100, 20).build());
 	}
 
