@@ -13,6 +13,7 @@ import io.github.apace100.origins.registry.ModDamageSources;
 import io.github.apace100.origins.registry.ModItems;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.common.ApoliEventHandler;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import io.github.edwinmindcraft.calio.api.event.DynamicRegistrationEvent;
 import io.github.edwinmindcraft.origins.api.OriginsAPI;
@@ -232,6 +233,12 @@ public class OriginsEventHandler {
 								.map(x -> x.unwrapKey().orElseThrow().location().toString())
 								.collect(Collectors.joining(",")),
 						event.getRegistryName());
+			}
+			powers.removeIf(x -> {
+				Optional<ResourceKey<ConfiguredPower<?, ?>>> key = x.unwrapKey();
+				return key.isEmpty() || ApoliEventHandler.isPowerDisabled(key.get().location());
+			});
+			if (powers.size() != originalPowers.size()) {
 				event.setNewEntry(new Origin(ImmutableList.of(HolderSet.direct(ImmutableList.copyOf(powers))), original.getIcon(), original.isUnchoosable(),
 						original.getOrder(), original.getImpact(), original.getName(), original.getDescription(),
 						original.getUpgrades(), original.isSpecial()));
