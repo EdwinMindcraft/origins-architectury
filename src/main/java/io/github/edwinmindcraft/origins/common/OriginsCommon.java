@@ -5,6 +5,7 @@ import io.github.apace100.origins.Origins;
 import io.github.apace100.origins.badge.BadgeFactories;
 import io.github.apace100.origins.badge.BadgeManager;
 import io.github.apace100.origins.power.OriginsPowerTypes;
+import io.github.apace100.origins.registry.ModItems;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
@@ -19,7 +20,9 @@ import io.github.edwinmindcraft.origins.common.network.*;
 import io.github.edwinmindcraft.origins.common.registry.OriginArgumentTypes;
 import io.github.edwinmindcraft.origins.common.registry.OriginRegisters;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -86,6 +89,7 @@ public class OriginsCommon {
 		mod.addListener(OriginsCommon::initializeDynamicRegistries);
 		mod.addListener(OriginsCommon::registerCapabilities);
 		mod.addListener(OriginsCommon::commonSetup);
+		mod.addListener(OriginsCommon::modifyCreativeTabs);
 	}
 
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
@@ -106,5 +110,11 @@ public class OriginsCommon {
 		registryManager.add(OriginsDynamicRegistries.LAYERS_REGISTRY, OriginLayer.CODEC);
 		registryManager.addReload(OriginsDynamicRegistries.LAYERS_REGISTRY, "origin_layers", LayerLoader.INSTANCE);
 		registryManager.addValidation(OriginsDynamicRegistries.LAYERS_REGISTRY, LayerLoader.INSTANCE, OriginLayer.class, OriginsDynamicRegistries.ORIGINS_REGISTRY);
+	}
+
+	public static void modifyCreativeTabs(BuildCreativeModeTabContentsEvent event) {
+		if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+			event.accept(ModItems.ORB_OF_ORIGIN);
+		}
 	}
 }

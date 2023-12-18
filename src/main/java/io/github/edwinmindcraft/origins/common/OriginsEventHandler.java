@@ -246,10 +246,4 @@ public class OriginsEventHandler {
 		}
 	}
 
-    @SubscribeEvent
-    public static void modifyCreativeTabs(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
-            event.accept(ModItems.ORB_OF_ORIGIN);
-        }
-    }
 }
