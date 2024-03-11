@@ -48,12 +48,14 @@ public class OriginArgumentType implements ArgumentType<ResourceLocation> {
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
 
 		List<ResourceLocation> availableOrigins = new ArrayList<>();
-		availableOrigins.add(OriginsBuiltinRegistries.ORIGINS.get().getKey(Origin.EMPTY));
 
-		ResourceLocation originLayerId = context.getArgument("layer", ResourceLocation.class);
-		OriginLayer originLayer = OriginsAPI.getLayersRegistry().get(originLayerId);
+		try {
+			ResourceLocation originLayerId = context.getArgument("layer", ResourceLocation.class);
+			OriginLayer originLayer = OriginsAPI.getLayersRegistry().get(originLayerId);
 
-		availableOrigins.addAll(originLayer.origins().stream().map(Holder::unwrapKey).flatMap(Optional::stream).map(ResourceKey::location).collect(Collectors.toCollection(LinkedList::new)));
+			availableOrigins.add(OriginsBuiltinRegistries.ORIGINS.get().getKey(Origin.EMPTY));
+			if (originLayer != null) availableOrigins.addAll(originLayer.origins().stream().map(Holder::unwrapKey).flatMap(Optional::stream).map(ResourceKey::location).collect(Collectors.toCollection(LinkedList::new)));
+		} catch (IllegalArgumentException ignored) {}
 
 		return SharedSuggestionProvider.suggestResource(availableOrigins.stream(), builder);
 	}
