@@ -10,8 +10,7 @@ import io.github.apace100.origins.origin.OriginLayers;
 import io.github.apace100.origins.origin.OriginRegistry;
 import io.github.apace100.origins.power.OriginsPowerTypes;
 import io.github.apace100.origins.registry.ModDamageSources;
-import io.github.apace100.origins.registry.ModItems;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.ApoliEventHandler;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
@@ -36,7 +35,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.*;
@@ -186,7 +184,7 @@ public class OriginsEventHandler {
 		if (event.phase == TickEvent.Phase.END) {
 			Player player = event.player;
 			IOriginContainer.get(event.player).ifPresent(IOriginContainer::tick);
-			if (IPowerContainer.hasPower(player, OriginsPowerTypes.WATER_BREATHING.get())) {
+			if (PowerContainer.hasPower(player, OriginsPowerTypes.WATER_BREATHING.get())) {
 				if (!player.isEyeInFluidType(ForgeMod.WATER_TYPE.get()) && !player.hasEffect(MobEffects.WATER_BREATHING) && !player.hasEffect(MobEffects.CONDUIT_POWER)) {
 					if (!((EntityAccessor) player).callIsBeingRainedOn()) {
 						int landGain = increaseAirSupply(player, 0);

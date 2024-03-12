@@ -8,7 +8,7 @@ import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.component.PlayerOriginComponent;
 import io.github.apace100.origins.util.ChoseOriginCriterion;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import io.github.edwinmindcraft.origins.api.OriginsAPI;
@@ -79,7 +79,7 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
         ResourceKey<Origin> previous = this.layers.put(layer, origin);
         if (!Objects.equals(origin, previous) || !handlePowers) {
             if (handlePowers) {
-                IPowerContainer.get(this.player).ifPresent(container -> {
+                PowerContainer.get(this.player).ifPresent(container -> {
                     this.grantPowers(container, origin, originHolder.get());
                     if (previous != null)
                         container.removeAllPowersFromSource(OriginsAPI.getPowerSource(previous));
@@ -93,7 +93,7 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
         }
     }
 
-	private void grantPowers(IPowerContainer container, @NotNull ResourceKey<Origin> origin, Holder<Origin> holder) {
+	private void grantPowers(PowerContainer container, @NotNull ResourceKey<Origin> origin, Holder<Origin> holder) {
 		ResourceLocation powerSource = OriginsAPI.getPowerSource(origin);
 		Registry<ConfiguredPower<?, ?>> powers = ApoliAPI.getPowers(this.player.getServer());
 		for (HolderSet<ConfiguredPower<?, ?>> holderSet : holder.value().getPowers()) {
@@ -147,7 +147,7 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 	public void tick() {
 		if (this.cleanupPowers) {
 			this.cleanupPowers = false;
-			IPowerContainer.get(this.player).ifPresent(this::applyCleanup);
+			PowerContainer.get(this.player).ifPresent(this::applyCleanup);
 		}
 		if (this.shouldSync() && !this.player.level().isClientSide() && this.syncCooldown.decrementAndGet() <= 0) {
 			OriginsCommon.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this.player), this.getSynchronizationPacket());
@@ -156,7 +156,7 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 		}
 	}
 
-	private void applyCleanup(@NotNull IPowerContainer container) {
+	private void applyCleanup(@NotNull PowerContainer container) {
 		MappedRegistry<Origin> originsRegistry = OriginsAPI.getOriginsRegistry();
         MappedRegistry<OriginLayer> layersRegistry = OriginsAPI.getLayersRegistry();
 		Iterator<Map.Entry<ResourceKey<OriginLayer>, ResourceKey<Origin>>> iterator = this.layers.entrySet().iterator();
@@ -250,7 +250,7 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 	@Override
 	public void onChosen(@NotNull ResourceKey<Origin> origin, boolean isOrb) {
 		Set<ResourceKey<ConfiguredPower<?, ?>>> set = Sets.newHashSet();
-		IPowerContainer.get(this.player).ifPresent(container -> container.getPowersFromSource(OriginsAPI.getPowerSource(origin)).stream()
+		PowerContainer.get(this.player).ifPresent(container -> container.getPowersFromSource(OriginsAPI.getPowerSource(origin)).stream()
 				.map(container::getPower)
 				.filter(Objects::nonNull)
 				.forEach(power -> {
@@ -270,7 +270,7 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 	@Override
 	public void onChosen(boolean isOrb) {
 		Set<ResourceKey<ConfiguredPower<?, ?>>> set = Sets.newHashSet();
-		IPowerContainer.get(this.player).ifPresent(container -> container.getPowers().forEach(x -> {
+		PowerContainer.get(this.player).ifPresent(container -> container.getPowers().forEach(x -> {
 			if (x.isBound() && x.value().getFactory() instanceof IOriginCallbackPower callbackPower) {
 				if (!callbackPower.isReady(x.value(), this.player, isOrb)) {
 					callbackPower.prepare(x.value(), this.player, isOrb);
@@ -357,20 +357,20 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 			Optional<Holder.Reference<Origin>> origin1 = originsRegistry.getHolder(originKey);
 			if (origin1.isEmpty() || !origin1.get().isBound()) {
 				Origins.LOGGER.warn("Missing origin {} found for layer {} on entity {}", origin, key, this.player.getScoreboardName());
-				IPowerContainer.get(this.player).ifPresent(container -> container.removeAllPowersFromSource(OriginsAPI.getPowerSource(orig)));
+				PowerContainer.get(this.player).ifPresent(container -> container.removeAllPowersFromSource(OriginsAPI.getPowerSource(orig)));
 				continue;
 			}
 			ResourceLocation rl = ResourceLocation.tryParse(key);
 			if (rl == null) {
 				Origins.LOGGER.warn("Invalid layer found {} on entity {}", key, this.player.getScoreboardName());
-				IPowerContainer.get(this.player).ifPresent(container -> container.removeAllPowersFromSource(OriginsAPI.getPowerSource(origin1.get())));
+				PowerContainer.get(this.player).ifPresent(container -> container.removeAllPowersFromSource(OriginsAPI.getPowerSource(origin1.get())));
 				continue;
 			}
             ResourceKey<OriginLayer> layerKey = ResourceKey.create(OriginsDynamicRegistries.LAYERS_REGISTRY, rl);
 			Optional<Holder.Reference<OriginLayer>> layer = layersRegistry.getHolder(layerKey);
 			if (layer.isEmpty() || !layer.get().isBound()) {
 				Origins.LOGGER.warn("Missing layer {} on entity {}", rl, this.player.getScoreboardName());
-				IPowerContainer.get(this.player).ifPresent(container -> container.removeAllPowersFromSource(OriginsAPI.getPowerSource(origin1.get())));
+				PowerContainer.get(this.player).ifPresent(container -> container.removeAllPowersFromSource(OriginsAPI.getPowerSource(origin1.get())));
 				continue;
 			}
 			this.setOriginInternal(layerKey, originKey, false);

@@ -2,7 +2,7 @@ package io.github.apace100.origins.mixin;
 
 
 import io.github.apace100.origins.power.OriginsPowerTypes;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.PowerContainer;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
@@ -27,13 +27,13 @@ public abstract class ScareCreepersMixin extends Monster {
 
 	@Inject(at = @At("TAIL"), method = "registerGoals")
 	private void addGoals(CallbackInfo info) {
-		Goal goal = new AvoidEntityGoal<>(this, Player.class, e -> IPowerContainer.hasPower(e, OriginsPowerTypes.SCARE_CREEPERS.get()), 6.0F, 1.0D, 1.2D, EntitySelector.NO_CREATIVE_OR_SPECTATOR::test);
+		Goal goal = new AvoidEntityGoal<>(this, Player.class, e -> PowerContainer.hasPower(e, OriginsPowerTypes.SCARE_CREEPERS.get()), 6.0F, 1.0D, 1.2D, EntitySelector.NO_CREATIVE_OR_SPECTATOR::test);
 		this.goalSelector.addGoal(3, goal);
 	}
 
 	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ai/goal/GoalSelector;addGoal(ILnet/minecraft/world/entity/ai/goal/Goal;)V", ordinal = 8), method = "registerGoals")
 	private void redirectTargetGoal(GoalSelector goalSelector, int priority, Goal goal) {
-		Goal newGoal = new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, e -> !IPowerContainer.hasPower(e, OriginsPowerTypes.SCARE_CREEPERS.get()));
+		Goal newGoal = new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, e -> !PowerContainer.hasPower(e, OriginsPowerTypes.SCARE_CREEPERS.get()));
 		goalSelector.addGoal(priority, newGoal);
 	}
 }
