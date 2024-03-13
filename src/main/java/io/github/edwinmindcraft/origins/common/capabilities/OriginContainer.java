@@ -2,7 +2,6 @@ package io.github.edwinmindcraft.origins.common.capabilities;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import io.github.apace100.calio.Calio;
 import io.github.apace100.origins.Origins;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.component.PlayerOriginComponent;
@@ -59,18 +58,24 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 
 	@Override
 	public void setOrigin(@NotNull OriginLayer layer, @NotNull Origin origin) {
+		setOriginInternal(layer, origin, true);
+	}
+
+	public void setOriginInternal(@NotNull OriginLayer layer, @NotNull Origin origin, boolean handlePowers) {
 		Origin previous = this.layers.put(layer, origin);
-		if (!Objects.equals(origin, previous)) {
-			IPowerContainer.get(this.player).ifPresent(container -> {
-				this.grantPowers(container, origin);
-				if (previous != null)
-					container.removeAllPowersFromSource(OriginsAPI.getPowerSource(previous));
-				if (this.hasAllOrigins())
-					this.hadAllOrigins.set(true);
-			});
+		if (!Objects.equals(origin, previous) || !handlePowers) {
+			if (handlePowers) {
+				IPowerContainer.get(this.player).ifPresent(container -> {
+					this.grantPowers(container, origin);
+					if (previous != null)
+						container.removeAllPowersFromSource(OriginsAPI.getPowerSource(previous));
+					if (this.hasAllOrigins())
+						this.hadAllOrigins.set(true);
+					if (this.player instanceof ServerPlayer sp)
+						ChoseOriginCriterion.INSTANCE.trigger(sp, origin);
+				});
+			}
 			this.synchronize();
-			if (this.player instanceof ServerPlayer sp)
-				ChoseOriginCriterion.INSTANCE.trigger(sp, origin);
 		}
 	}
 
@@ -296,7 +301,7 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 				IPowerContainer.get(this.player).ifPresent(container -> container.removeAllPowersFromSource(OriginsAPI.getPowerSource(origin1)));
 				continue;
 			}
-			this.setOrigin(layer, origin1);
+			this.setOriginInternal(layer, origin1, false);
 		}
 		this.hadAllOrigins.set(tag.getBoolean("HadAllOrigins"));
 	}
