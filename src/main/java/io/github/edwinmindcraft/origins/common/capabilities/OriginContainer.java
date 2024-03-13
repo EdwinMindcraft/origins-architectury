@@ -69,11 +69,11 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 					this.grantPowers(container, origin);
 					if (previous != null)
 						container.removeAllPowersFromSource(OriginsAPI.getPowerSource(previous));
-					if (this.hasAllOrigins())
-						this.hadAllOrigins.set(true);
-					if (this.player instanceof ServerPlayer sp)
-						ChoseOriginCriterion.INSTANCE.trigger(sp, origin);
 				});
+				if (this.hasAllOrigins())
+					this.hadAllOrigins.set(true);
+				if (this.player instanceof ServerPlayer sp)
+					ChoseOriginCriterion.INSTANCE.trigger(sp, origin);
 			}
 			this.synchronize();
 		}
