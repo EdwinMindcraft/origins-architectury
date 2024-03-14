@@ -39,8 +39,8 @@ public final class OriginLayer implements Comparable<OriginLayer> {
 			CalioCodecHelper.setOf(ResourceLocation.CODEC).fieldOf("random_exclusions").forGetter(OriginLayer::randomExclusions),
 			Origin.optional("default").forGetter(OriginLayer::defaultOrigin),
 			CalioCodecHelper.BOOL.fieldOf("auto_choose").forGetter(OriginLayer::autoChoose),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "hidden", false).forGetter(OriginLayer::hidden),
-			CalioCodecHelper.optionalField(GuiTitle.CODEC, "gui_title", GuiTitle.DEFAULT).forGetter(OriginLayer::title)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "hidden", false).forGetter(OriginLayer::hidden),
+			ExtraCodecs.strictOptionalField(GuiTitle.CODEC, "gui_title", GuiTitle.DEFAULT).forGetter(OriginLayer::title)
 	).apply(instance, OriginLayer::new));
 
 	public static final CodecSet<OriginLayer> CODEC_SET = CalioCodecHelper.forDynamicRegistry(OriginsDynamicRegistries.LAYERS_REGISTRY, SerializableDataTypes.IDENTIFIER, CODEC);

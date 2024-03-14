@@ -29,7 +29,6 @@ import io.github.edwinmindcraft.apoli.common.condition.configuration.ProjectileC
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.*;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import io.github.edwinmindcraft.apoli.common.registry.action.ApoliDefaultActions;
 import io.github.edwinmindcraft.apoli.common.registry.action.ApoliEntityActions;
 import io.github.edwinmindcraft.apoli.common.registry.condition.*;
 import io.github.edwinmindcraft.origins.common.power.configuration.NoSlowdownConfiguration;

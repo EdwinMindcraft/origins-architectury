@@ -21,6 +21,6 @@ public record OriginsCallbackConfiguration(Holder<ConfiguredEntityAction<?, ?>> 
 			ConfiguredEntityAction.optional("entity_action_lost").forGetter(OriginsCallbackConfiguration::entityActionLost),
 			ConfiguredEntityAction.optional("entity_action_added").forGetter(OriginsCallbackConfiguration::entityActionAdded),
 			ConfiguredEntityAction.optional("entity_action_chosen").forGetter(OriginsCallbackConfiguration::entityActionChosen),
-			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "execute_chosen_when_orb", true).forGetter(OriginsCallbackConfiguration::onOrb)
+			ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "execute_chosen_when_orb", true).forGetter(OriginsCallbackConfiguration::onOrb)
 	).apply(instance, OriginsCallbackConfiguration::new));
 }

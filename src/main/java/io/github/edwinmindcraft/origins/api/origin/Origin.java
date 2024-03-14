@@ -49,14 +49,14 @@ public class Origin {
 
     public static final Codec<Origin> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ConfiguredPower.CODEC_SET.set().fieldOf("powers").forGetter(Origin::getPowers),
-            CalioCodecHelper.optionalField(ItemStack.CODEC, "icon", ItemStack.EMPTY).forGetter(Origin::getIcon),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "unchoosable", false).forGetter(Origin::isUnchoosable),
-            CalioCodecHelper.optionalField(CalioCodecHelper.INT, "order", Integer.MAX_VALUE).forGetter(Origin::getOrder),
-            CalioCodecHelper.optionalField(OriginsDataTypes.IMPACT, "impact", Impact.NONE).forGetter(Origin::getImpact),
+            ExtraCodecs.strictOptionalField(ItemStack.CODEC, "icon", ItemStack.EMPTY).forGetter(Origin::getIcon),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "unchoosable", false).forGetter(Origin::isUnchoosable),
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.INT, "order", Integer.MAX_VALUE).forGetter(Origin::getOrder),
+            ExtraCodecs.strictOptionalField(OriginsDataTypes.IMPACT, "impact", Impact.NONE).forGetter(Origin::getImpact),
             CalioCodecHelper.COMPONENT_CODEC.fieldOf("name").forGetter(Origin::getName),
             CalioCodecHelper.COMPONENT_CODEC.fieldOf("description").forGetter(Origin::getDescription),
             CalioCodecHelper.setOf(OriginUpgrade.CODEC).fieldOf("upgrades").forGetter(Origin::getUpgrades),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "special", false).forGetter(Origin::isSpecial)
+            ExtraCodecs.strictOptionalField(CalioCodecHelper.BOOL, "special", false).forGetter(Origin::isSpecial)
     ).apply(instance, Origin::new));
 
     public static final CodecSet<Origin> CODEC_SET = CalioCodecHelper.forDynamicRegistry(OriginsDynamicRegistries.ORIGINS_REGISTRY, SerializableDataTypes.IDENTIFIER, CODEC);
