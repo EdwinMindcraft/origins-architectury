@@ -40,12 +40,12 @@ public class OriginDisplayScreen extends Screen {
 	//Yes, this is improper usage of that class, but that's what isBound is for.
 	@SuppressWarnings("ConstantConditions")
 	private static Holder<Origin> unboundOrigin() {
-		return Holder.Reference.createStandAlone(OriginsAPI.getOriginsRegistry(null).holderOwner(), null);
+		return Holder.Reference.createStandAlone(OriginsAPI.getOriginsRegistry().holderOwner(), null);
 	}
 
 	@SuppressWarnings("ConstantConditions")
 	private static Holder<OriginLayer> unboundLayer() {
-		return Holder.Reference.createStandAlone(OriginsAPI.getLayersRegistry(null).holderOwner(), null);
+		return Holder.Reference.createStandAlone(OriginsAPI.getLayersRegistry().holderOwner(), null);
 	}
 
 	@NotNull

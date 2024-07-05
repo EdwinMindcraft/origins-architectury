@@ -95,11 +95,11 @@ public class ChooseOriginScreen extends OriginDisplayScreen {
 			}).bounds(this.guiLeft + windowWidth + 20, this.height / 2 - 10, 20, 20).build());
 		}
 		this.addRenderableWidget(Button.builder(Component.translatable(Origins.MODID + ".gui.select"), b -> {
-			ResourceLocation layer = this.layerList.get(this.currentLayerIndex).unwrap().map(Optional::of, OriginsAPI.getLayersRegistry(null)::getResourceKey).map(ResourceKey::location).orElseThrow();
+			ResourceLocation layer = this.layerList.get(this.currentLayerIndex).unwrap().map(Optional::of, OriginsAPI.getLayersRegistry()::getResourceKey).map(ResourceKey::location).orElseThrow();
 			if (this.currentOrigin == this.originSelection.size())
 				OriginsCommon.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SChooseRandomOrigin(layer));
 			else {
-				Optional<ResourceKey<Origin>> key = this.getCurrentOrigin().unwrap().map(Optional::of, OriginsAPI.getOriginsRegistry(null)::getResourceKey);
+				Optional<ResourceKey<Origin>> key = this.getCurrentOrigin().unwrap().map(Optional::of, OriginsAPI.getOriginsRegistry()::getResourceKey);
 				if (key.isPresent())
 					OriginsCommon.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SChooseOrigin(layer, key.get().location()));
 				else
