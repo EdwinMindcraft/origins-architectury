@@ -38,7 +38,7 @@ public record PartialGuiTitle(@Nullable String view,
 
 		@Override
 		public PartialGuiTitle deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			if (json.isJsonObject())
+			if (!json.isJsonObject())
 				return new PartialGuiTitle(null, null);
 			JsonObject guiTitleObj = json.getAsJsonObject();
 			String view = null;
