@@ -18,18 +18,18 @@ import io.github.edwinmindcraft.apoli.common.power.RecipePower;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import io.github.edwinmindcraft.origins.api.event.AutoBadgeEvent;
 import io.github.edwinmindcraft.origins.api.registry.OriginsBuiltinRegistries;
-import io.github.edwinmindcraft.origins.common.OriginsCommon;
 import io.github.edwinmindcraft.origins.common.network.S2CSynchronizeBadges;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -51,15 +51,15 @@ public final class BadgeManager {
 
 	public static void init() {
 		//Mark factories as forge registry backed.
-		REGISTRY.setForgeRegistryAccess(OriginsBuiltinRegistries.BADGE_FACTORIES);
+		REGISTRY.setRegistryAccess(OriginsBuiltinRegistries.BADGE_FACTORIES);
 		//register callbacks
-		MinecraftForge.EVENT_BUS.addListener((CalioDynamicRegistryEvent.Reload event) -> BadgeManager.clear());
-		MinecraftForge.EVENT_BUS.addListener(BadgeManager::createAutoBadges);
+		NeoForge.EVENT_BUS.addListener((CalioDynamicRegistryEvent.Reload event) -> BadgeManager.clear());
+		NeoForge.EVENT_BUS.addListener(BadgeManager::createAutoBadges);
 		//These events are fired on a non-standard priority to allow for better integration.
 		//Custom badges on HIGH, which means NORMAL will have the custom badges loaded.
 		//Auto badges on LOW which means that it'll only fire after NORMAL events perform their actions.
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, BadgeManager::readCustomBadges);
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOW, BadgeManager::readAutoBadges);
+		NeoForge.EVENT_BUS.addListener(EventPriority.HIGH, BadgeManager::readCustomBadges);
+		NeoForge.EVENT_BUS.addListener(EventPriority.LOW, BadgeManager::readAutoBadges);
 		ApoliAPI.addAdditionalDataField("badges");
 	}
 
@@ -85,7 +85,7 @@ public final class BadgeManager {
 
 	public static void sync(ServerPlayer player) {
 		REGISTRY.sync(player);
-		OriginsCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), createPacket());
+		PacketDistributor.sendToPlayer(player, createPacket());
 	}
 
 	public static void readCustomBadges(PowerLoadEvent.Post event) {
@@ -139,9 +139,9 @@ public final class BadgeManager {
 		List<Badge> badgeList = new LinkedList<>();
 		for (Holder<ConfiguredPower<?, ?>> value : powerType.getContainedPowers().values()) {
 			if (value.isBound())
-				MinecraftForge.EVENT_BUS.post(new AutoBadgeEvent(powerId, value.value(), badgeList));
+				NeoForge.EVENT_BUS.post(new AutoBadgeEvent(powerId, value.value(), badgeList));
 		}
-		MinecraftForge.EVENT_BUS.post(new AutoBadgeEvent(powerId, powerType, badgeList));
+		NeoForge.EVENT_BUS.post(new AutoBadgeEvent(powerId, powerType, badgeList));
 		for (Badge badge : badgeList)
 			putPowerBadge(powerId, badge);
 	}
@@ -161,9 +161,9 @@ public final class BadgeManager {
 				));
 			}
 		} else if (factory instanceof RecipePower) {
-			FieldConfiguration<Recipe<CraftingContainer>> config = (FieldConfiguration<Recipe<CraftingContainer>>) event.getPower().getConfiguration();
-			Recipe<CraftingContainer> recipe = config.value();
-			String type = recipe instanceof ShapedRecipe ? "shaped" : "shapeless";
+			FieldConfiguration<RecipeHolder<Recipe<CraftingInput>>> config = (FieldConfiguration<RecipeHolder<Recipe<CraftingInput>>>) event.getPower().getConfiguration();
+			RecipeHolder<Recipe<CraftingInput>> recipe = config.value();
+			String type = recipe.value() instanceof ShapedRecipe ? "shaped" : "shapeless";
 			event.getBadges().add(new CraftingRecipeBadge(RECIPE_BADGE_SPRITE, recipe,
 					Component.translatable("origins.gui.badge.recipe.crafting." + type), null
 			));

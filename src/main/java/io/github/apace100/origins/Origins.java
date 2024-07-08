@@ -6,20 +6,17 @@ import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.power.OriginsEntityConditions;
 import io.github.apace100.origins.power.OriginsPowerTypes;
 import io.github.apace100.origins.registry.*;
-import io.github.apace100.origins.util.ChoseOriginCriterion;
 import io.github.edwinmindcraft.calio.api.CalioAPI;
 import io.github.edwinmindcraft.origins.api.OriginsAPI;
 import io.github.edwinmindcraft.origins.common.OriginsCommon;
 import io.github.edwinmindcraft.origins.common.OriginsConfigs;
 import io.github.edwinmindcraft.origins.common.registry.OriginArgumentTypes;
 import io.github.edwinmindcraft.origins.data.OriginsData;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,12 +30,12 @@ public class Origins {
 	@Deprecated
 	public static ServerConfig config = new ServerConfig();
 
-	public Origins() {
+	public Origins(IEventBus bus) {
 		VERSION = ModLoadingContext.get().getActiveContainer().getModInfo().getVersion().toString();
 		LOGGER.info("Origins " + VERSION + " is initializing. Have fun!");
-		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, OriginsConfigs.COMMON_SPECS);
-		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, OriginsConfigs.CLIENT_SPECS);
-		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, OriginsConfigs.SERVER_SPECS);
+		ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.COMMON, OriginsConfigs.COMMON_SPECS);
+		ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.CLIENT, OriginsConfigs.CLIENT_SPECS);
+		ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.SERVER, OriginsConfigs.SERVER_SPECS);
 
 		NamespaceAlias.addAlias(MODID, "apoli");
 
@@ -53,17 +50,17 @@ public class Origins {
 		ModEntities.register();
 		ModLoot.register();
 
-		OriginsCommon.initialize();
+		OriginsCommon.initialize(bus);
 		OriginsData.initialize();
 
-		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> OriginsClient::initialize);
 		NamespaceAlias.addAlias("origins", "apoli");
 
-		CriteriaTriggers.register(ChoseOriginCriterion.INSTANCE);
+		// FIXME: Register criterions like a regular registry.
+		// CriteriaTriggers.register(ChoseOriginCriterion.INSTANCE);
 	}
 
 	public static ResourceLocation identifier(String path) {
-		return new ResourceLocation(Origins.MODID, path);
+		return ResourceLocation.fromNamespaceAndPath(Origins.MODID, path);
 	}
 
 	@Deprecated
@@ -80,7 +77,7 @@ public class Origins {
 
 		@Deprecated
 		public boolean addToConfig(Origin origin) {
-			return OriginsConfigs.COMMON.updateOriginList(CalioAPI.getDynamicRegistries(), ImmutableList.of(origin.getWrapped()));
+			return OriginsConfigs.COMMON.updateOriginList(CalioAPI.getSidedRegistryAccess(), ImmutableList.of(origin.getWrapped()));
 		}
 	}
 }

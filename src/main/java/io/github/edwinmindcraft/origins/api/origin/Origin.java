@@ -11,11 +11,10 @@ import io.github.apace100.origins.data.OriginsDataTypes;
 import io.github.apace100.origins.origin.Impact;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
-import io.github.edwinmindcraft.apoli.common.ApoliEventHandler;
 import io.github.edwinmindcraft.calio.api.CalioAPI;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import io.github.edwinmindcraft.calio.api.registry.CalioDynamicRegistryManager;
 import io.github.edwinmindcraft.origins.api.registry.OriginsBuiltinRegistries;
 import io.github.edwinmindcraft.origins.api.registry.OriginsDynamicRegistries;
 import net.minecraft.core.Holder;
@@ -82,7 +81,7 @@ public class Origin {
         this(powers, icon, unchoosable, order, impact, name, description, upgrades, false);
     }
 
-    public Origin cleanup(ICalioDynamicRegistryManager manager) {
+    public Origin cleanup(CalioDynamicRegistryManager manager) {
         Registry<ConfiguredPower<?, ?>> powers = manager.get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
         ImmutableList.Builder<Holder<ConfiguredPower<?, ?>>> direct = ImmutableList.builder();
         ImmutableList.Builder<HolderSet<ConfiguredPower<?, ?>>> sets = ImmutableList.builder();

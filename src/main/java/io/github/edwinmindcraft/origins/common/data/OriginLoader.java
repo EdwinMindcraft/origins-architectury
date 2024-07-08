@@ -8,7 +8,7 @@ import io.github.apace100.origins.Origins;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.registry.DynamicEntryFactory;
 import io.github.edwinmindcraft.calio.api.registry.DynamicEntryValidator;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import io.github.edwinmindcraft.calio.api.registry.CalioDynamicRegistryManager;
 import io.github.edwinmindcraft.origins.api.data.PartialOrigin;
 import io.github.edwinmindcraft.origins.api.origin.Origin;
 import io.github.edwinmindcraft.origins.api.origin.OriginUpgrade;
@@ -48,7 +48,7 @@ public enum OriginLoader implements DynamicEntryValidator<Origin>, DynamicEntryF
 	}
 
 	@Override
-	public @NotNull DataResult<Origin> validate(@NotNull ResourceLocation resourceLocation, @NotNull Origin origin, @NotNull ICalioDynamicRegistryManager iCalioDynamicRegistryManager) {
+	public @NotNull DataResult<Origin> validate(@NotNull ResourceLocation resourceLocation, @NotNull Origin origin, @NotNull CalioDynamicRegistryManager iCalioDynamicRegistryManager) {
 		Origin cleanup = origin.cleanup(iCalioDynamicRegistryManager);
 		if (origin.getPowerAmount() > cleanup.getPowerAmount())
 			Origins.LOGGER.error("Removed {} missing powers from {}", origin.getPowerAmount() - cleanup.getPowerAmount(), resourceLocation);

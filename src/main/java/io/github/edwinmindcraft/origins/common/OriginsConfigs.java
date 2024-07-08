@@ -4,32 +4,32 @@ import com.electronwill.nightconfig.core.Config;
 import com.google.common.collect.ImmutableList;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import io.github.edwinmindcraft.origins.api.origin.Origin;
 import io.github.edwinmindcraft.origins.api.registry.OriginsDynamicRegistries;
 import net.minecraft.core.Holder;
-import net.minecraft.core.WritableRegistry;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Optional;
 
 public class OriginsConfigs {
 	public static class Server {
-		public Server(ForgeConfigSpec.Builder builder) {}
+		public Server(ModConfigSpec.Builder builder) {}
 	}
 
 	public static class Client {
-		public Client(ForgeConfigSpec.Builder builder) {}
+		public Client(ModConfigSpec.Builder builder) {}
 	}
 
 	public static class Common {
 
-		private final ForgeConfigSpec.ConfigValue<Config> origins;
+		private final ModConfigSpec.ConfigValue<Config> origins;
 
-		public Common(ForgeConfigSpec.Builder builder) {
+		public Common(ModConfigSpec.Builder builder) {
 			//Remove validation.
 			this.origins = builder.define(ImmutableList.of("origins"), Config::inMemory, x -> x instanceof Config, Config.class);
 		}
@@ -42,11 +42,11 @@ public class OriginsConfigs {
 			return this.origins.get().getOrElse(ImmutableList.of(origin.toString(), power.toString()), true);
 		}
 
-		public boolean updateOriginList(ICalioDynamicRegistryManager registryManager, Iterable<Origin> origins) {
+		public boolean updateOriginList(RegistryAccess registries) {
 			boolean changed = false;
-			WritableRegistry<Origin> registry = registryManager.get(OriginsDynamicRegistries.ORIGINS_REGISTRY);
-			WritableRegistry<ConfiguredPower<?, ?>> powers = registryManager.get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
-			for (Origin origin : origins) {
+			Registry<Origin> registry = registries.registryOrThrow(OriginsDynamicRegistries.ORIGINS_REGISTRY);
+			Registry<ConfiguredPower<?, ?>> powers = registries.registryOrThrow(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
+			for (Origin origin : registry) {
 				ResourceLocation registryName = registry.getKey(origin);
 				if (origin.isSpecial() || registryName == null) //Ignore special origins
 					continue;
@@ -63,18 +63,18 @@ public class OriginsConfigs {
 		}
 	}
 
-	public static final ForgeConfigSpec COMMON_SPECS;
-	public static final ForgeConfigSpec CLIENT_SPECS;
-	public static final ForgeConfigSpec SERVER_SPECS;
+	public static final ModConfigSpec COMMON_SPECS;
+	public static final ModConfigSpec CLIENT_SPECS;
+	public static final ModConfigSpec SERVER_SPECS;
 
 	public static final Common COMMON;
 	public static final Client CLIENT;
 	public static final Server SERVER;
 
 	static {
-		Pair<Common, ForgeConfigSpec> common = new ForgeConfigSpec.Builder().configure(Common::new);
-		Pair<Client, ForgeConfigSpec> client = new ForgeConfigSpec.Builder().configure(Client::new);
-		Pair<Server, ForgeConfigSpec> server = new ForgeConfigSpec.Builder().configure(Server::new);
+		Pair<Common, ModConfigSpec> common = new ModConfigSpec.Builder().configure(Common::new);
+		Pair<Client, ModConfigSpec> client = new ModConfigSpec.Builder().configure(Client::new);
+		Pair<Server, ModConfigSpec> server = new ModConfigSpec.Builder().configure(Server::new);
 		COMMON_SPECS = common.getRight();
 		CLIENT_SPECS = client.getRight();
 		SERVER_SPECS = server.getRight();

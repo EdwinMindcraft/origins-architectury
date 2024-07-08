@@ -5,23 +5,22 @@ import io.github.apace100.apoli.ApoliClient;
 import io.github.apace100.origins.registry.ModEntities;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import org.lwjgl.glfw.GLFW;
 
-@OnlyIn(Dist.CLIENT)
+@Mod(value = Origins.MODID, dist = Dist.CLIENT)
 public class OriginsClient {
 
 	public static KeyMapping usePrimaryActivePowerKeybind;
 	public static KeyMapping useSecondaryActivePowerKeybind;
 	public static KeyMapping viewCurrentOriginKeybind;
 
-	public static void initialize() {
+	public static void initialize(IEventBus bus) {
 
 		usePrimaryActivePowerKeybind = new KeyMapping("key.origins.primary_active", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_G, "category." + Origins.MODID);
 		useSecondaryActivePowerKeybind = new KeyMapping("key.origins.secondary_active", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category." + Origins.MODID);
@@ -34,7 +33,6 @@ public class OriginsClient {
 
 		// "none" is the default key used when none is specified.
 		ApoliClient.registerPowerKeybinding("none", usePrimaryActivePowerKeybind);
-		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		bus.addListener(OriginsClient::clientSetup);
 		bus.addListener(OriginsClient::entityRenderers);
 		bus.addListener(OriginsClient::registerKeyBindings);

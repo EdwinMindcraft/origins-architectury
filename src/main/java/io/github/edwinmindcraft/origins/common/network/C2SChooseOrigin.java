@@ -10,31 +10,35 @@ import io.github.edwinmindcraft.origins.common.OriginsCommon;
 import io.github.edwinmindcraft.origins.common.registry.OriginRegisters;
 import net.minecraft.core.Holder;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
-public record C2SChooseOrigin(ResourceLocation layer, ResourceLocation origin) {
+public record C2SChooseOrigin(ResourceLocation layer, ResourceLocation origin) implements CustomPacketPayload {
+	public static final ResourceLocation ID = Origins.identifier("choose_origin");
+	public static final CustomPacketPayload.Type<C2SChooseOrigin> TYPE = new CustomPacketPayload.Type<>(ID);
+	public static final StreamCodec<RegistryFriendlyByteBuf, C2SChooseOrigin> STREAM_CODEC = StreamCodec.of(C2SChooseOrigin::encode, C2SChooseOrigin::decode);
 
 	public static C2SChooseOrigin decode(FriendlyByteBuf buf) {
 		return new C2SChooseOrigin(buf.readResourceLocation(), buf.readResourceLocation());
 	}
 
-	public void encode(FriendlyByteBuf buf) {
-		buf.writeResourceLocation(this.layer());
-		buf.writeResourceLocation(this.origin());
+	public static void encode(FriendlyByteBuf buf, C2SChooseOrigin packet) {
+		buf.writeResourceLocation(packet.layer());
+		buf.writeResourceLocation(packet.origin());
 	}
 
-	public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-		contextSupplier.get().enqueueWork(() -> {
-			ServerPlayer sender = contextSupplier.get().getSender();
-			if (sender == null) return;
-			IOriginContainer.get(sender).ifPresent(container -> {
+	public void handle(IPayloadContext context) {
+		context.enqueueWork(() -> {
+			ServerPlayer sender = (ServerPlayer) context.player();
+			// FIXME: OriginContainer.
+            IOriginContainer.get(sender).ifPresent(container -> {
 				Optional<Holder.Reference<OriginLayer>> layer = OriginsAPI.getLayersRegistry().getHolder(ResourceKey.create(OriginsDynamicRegistries.LAYERS_REGISTRY, this.layer())).filter(Holder::isBound);
 				if (layer.isEmpty()) {
 					Origins.LOGGER.warn("Player {} tried to select an origin for missing layer {}", sender.getScoreboardName(), this.layer());
@@ -65,5 +69,10 @@ public record C2SChooseOrigin(ResourceLocation layer, ResourceLocation origin) {
 			});
 		});
 		contextSupplier.get().setPacketHandled(true);
+	}
+
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return TYPE;
 	}
 }

@@ -2,7 +2,7 @@ package io.github.edwinmindcraft.origins.api.capabilities;
 
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import io.github.edwinmindcraft.calio.api.registry.CalioDynamicRegistryManager;
 import io.github.edwinmindcraft.origins.api.OriginsAPI;
 import io.github.edwinmindcraft.origins.api.origin.IOriginCallbackPower;
 import io.github.edwinmindcraft.origins.api.origin.Origin;
@@ -13,8 +13,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +28,7 @@ public interface IOriginContainer extends INBTSerializable<Tag> {
 	 *
 	 * @return A lazy optional that may contain the container if applicable.
 	 */
-	static LazyOptional<IOriginContainer> get(@Nullable Entity entity) {
+	static IOriginContainer get(@Nullable Entity entity) {
 		return entity != null ? entity.getCapability(OriginsAPI.ORIGIN_CONTAINER) : LazyOptional.empty();
 	}
 
@@ -218,7 +216,7 @@ public interface IOriginContainer extends INBTSerializable<Tag> {
 	/**
 	 * Called when the datapacks are finished reloading.
 	 */
-	void onReload(ICalioDynamicRegistryManager registry);
+	void onReload(CalioDynamicRegistryManager registry);
 
 	/**
 	 * Converts this component into a fabric compatible one.

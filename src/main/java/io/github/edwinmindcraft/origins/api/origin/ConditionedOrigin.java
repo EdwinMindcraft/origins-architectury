@@ -11,7 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import io.github.edwinmindcraft.calio.api.registry.CalioDynamicRegistryManager;
 import io.github.edwinmindcraft.origins.api.OriginsAPI;
 import io.github.edwinmindcraft.origins.api.registry.OriginsDynamicRegistries;
 import net.minecraft.core.Holder;
@@ -89,7 +89,7 @@ public record ConditionedOrigin(
 		return this.origins().isEmpty();
 	}
 
-	public ConditionedOrigin cleanup(ICalioDynamicRegistryManager registries) {
+	public ConditionedOrigin cleanup(CalioDynamicRegistryManager registries) {
 		WritableRegistry<Origin> registry = registries.get(OriginsDynamicRegistries.ORIGINS_REGISTRY);
 		ImmutableList.Builder<Holder<Origin>> directBuilder = ImmutableList.builder();
 		ImmutableList.Builder<HolderSet<Origin>> builder = ImmutableList.builder();

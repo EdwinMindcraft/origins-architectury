@@ -7,7 +7,7 @@ import com.mojang.serialization.DataResult;
 import io.github.apace100.origins.Origins;
 import io.github.edwinmindcraft.calio.api.registry.DynamicEntryFactory;
 import io.github.edwinmindcraft.calio.api.registry.DynamicEntryValidator;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import io.github.edwinmindcraft.calio.api.registry.CalioDynamicRegistryManager;
 import io.github.edwinmindcraft.origins.api.data.PartialGuiTitle;
 import io.github.edwinmindcraft.origins.api.data.PartialLayer;
 import io.github.edwinmindcraft.origins.api.origin.ConditionedOrigin;
@@ -45,7 +45,7 @@ public enum LayerLoader implements DynamicEntryValidator<OriginLayer>, DynamicEn
 	}
 
 	@Override
-	public @NotNull DataResult<OriginLayer> validate(@NotNull ResourceLocation resourceLocation, @NotNull OriginLayer originLayer, @NotNull ICalioDynamicRegistryManager manager) {
+	public @NotNull DataResult<OriginLayer> validate(@NotNull ResourceLocation resourceLocation, @NotNull OriginLayer originLayer, @NotNull CalioDynamicRegistryManager manager) {
 		return DataResult.success(originLayer.cleanup(manager));
 	}
 }

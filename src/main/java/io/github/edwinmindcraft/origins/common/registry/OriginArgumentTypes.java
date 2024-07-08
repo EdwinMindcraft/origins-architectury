@@ -5,12 +5,13 @@ import io.github.apace100.origins.command.OriginArgumentType;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 public class OriginArgumentTypes {
 
-	public static final RegistryObject<ArgumentTypeInfo<OriginArgumentType, ?>> ORIGIN = OriginRegisters.ARGUMENT_TYPES.register("origin", () -> SingletonArgumentInfo.contextFree(OriginArgumentType::origin));
-	public static final RegistryObject<ArgumentTypeInfo<LayerArgumentType, ?>> LAYER = OriginRegisters.ARGUMENT_TYPES.register("layer", () -> SingletonArgumentInfo.contextFree(LayerArgumentType::layer));
+	public static final Supplier<ArgumentTypeInfo<OriginArgumentType, ?>> ORIGIN = OriginRegisters.ARGUMENT_TYPES.register("origin", () -> SingletonArgumentInfo.contextFree(OriginArgumentType::origin));
+	public static final Supplier<ArgumentTypeInfo<LayerArgumentType, ?>> LAYER = OriginRegisters.ARGUMENT_TYPES.register("layer", () -> SingletonArgumentInfo.contextFree(LayerArgumentType::layer));
 
 	public static void bootstrap() {}
 

@@ -5,13 +5,10 @@ import io.github.apace100.origins.badge.BadgeFactory;
 import io.github.edwinmindcraft.origins.api.origin.Origin;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraftforge.registries.IForgeRegistry;
-
-import java.util.function.Supplier;
 
 public class OriginsBuiltinRegistries {
 	public static final ResourceKey<Registry<BadgeFactory>> BADGE_FACTORY_KEY = ResourceKey.createRegistryKey(Origins.identifier("badge_factory"));
 
-	public static Supplier<IForgeRegistry<Origin>> ORIGINS;
-	public static Supplier<IForgeRegistry<BadgeFactory>> BADGE_FACTORIES;
+	public static Registry<Origin> ORIGINS;
+	public static Registry<BadgeFactory> BADGE_FACTORIES;
 }

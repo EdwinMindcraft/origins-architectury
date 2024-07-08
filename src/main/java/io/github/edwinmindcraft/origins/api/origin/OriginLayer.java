@@ -7,7 +7,7 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import io.github.edwinmindcraft.calio.api.registry.CalioDynamicRegistryManager;
 import io.github.edwinmindcraft.origins.api.registry.OriginsDynamicRegistries;
 import io.github.edwinmindcraft.origins.common.registry.OriginRegisters;
 import net.minecraft.core.Holder;
@@ -84,7 +84,7 @@ public final class OriginLayer implements Comparable<OriginLayer> {
 		this.title = title;
 	}
 
-	public OriginLayer cleanup(ICalioDynamicRegistryManager registries) {
+	public OriginLayer cleanup(CalioDynamicRegistryManager registries) {
 		Registry<Origin> registry = registries.get(OriginsDynamicRegistries.ORIGINS_REGISTRY);
 		return new OriginLayer(this.order(),
 				this.conditionedOrigins().stream().map(x -> x.cleanup(registries)).filter(x -> !x.isEmpty()).collect(ImmutableSet.toImmutableSet()),

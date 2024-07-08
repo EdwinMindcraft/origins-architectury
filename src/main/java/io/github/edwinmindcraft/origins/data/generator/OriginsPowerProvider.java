@@ -19,6 +19,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCond
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.TogglePowerConfiguration;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.action.configuration.DamageConfiguration;
 import io.github.edwinmindcraft.apoli.common.action.configuration.GiveConfiguration;
 import io.github.edwinmindcraft.apoli.common.action.configuration.PlaySoundConfiguration;
@@ -28,6 +29,7 @@ import io.github.edwinmindcraft.apoli.common.condition.configuration.FluidTagCom
 import io.github.edwinmindcraft.apoli.common.condition.configuration.ProjectileConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.*;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliDynamicRegisters;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.registry.action.ApoliEntityActions;
 import io.github.edwinmindcraft.apoli.common.registry.condition.*;
@@ -81,7 +83,7 @@ public class OriginsPowerProvider extends PowerGenerator {
 								new ModifyValueBlockConfiguration(ListConfiguration.of(ModifierUtil.fromAttributeModifier(new AttributeModifier(UUID.randomUUID(), "Unnamed attribute modifier", 4, AttributeModifier.Operation.MULTIPLY_TOTAL))), allow),
 								PowerData.builder().addCondition(ApoliEntityConditions.and(
 										ApoliEntityConditions.FLUID_HEIGHT.get().configure(new FluidTagComparisonConfiguration(new DoubleComparisonConfiguration(Comparison.GREATER_THAN, 0), FluidTags.WATER)),
-										ApoliEntityConditions.ON_BLOCK.get().configure(HolderConfiguration.defaultCondition(ApoliBuiltinRegistries.CONFIGURED_BLOCK_CONDITIONS), new ConditionData(true))
+										ApoliEntityConditions.ON_BLOCK.get().configure(HolderConfiguration.defaulted(ApoliDynamicRegistries.CONFIGURED_BLOCK_CONDITION_KEY), new ConditionData(true))
 								)).build())));
 		return builder.build();
 	}

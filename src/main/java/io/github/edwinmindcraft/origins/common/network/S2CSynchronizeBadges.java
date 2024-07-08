@@ -2,17 +2,25 @@ package io.github.edwinmindcraft.origins.common.network;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
+import io.github.apace100.origins.Origins;
 import io.github.apace100.origins.badge.Badge;
 import io.github.apace100.origins.badge.BadgeManager;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.function.Supplier;
 
-public record S2CSynchronizeBadges(Multimap<ResourceLocation, Badge> badges) {
+public record S2CSynchronizeBadges(Multimap<ResourceLocation, Badge> badges) implements CustomPacketPayload {
+	public static final ResourceLocation ID = Origins.identifier("sync_badges");
+	public static final Type<S2CSynchronizeBadges> TYPE = new Type<>(ID);
+	public static final StreamCodec<RegistryFriendlyByteBuf, S2CSynchronizeBadges> STREAM_CODEC = StreamCodec.of(S2CSynchronizeBadges::encode, S2CSynchronizeBadges::decode);
+
+
 	public static S2CSynchronizeBadges decode(FriendlyByteBuf buf) {
 		Multimap<ResourceLocation, Badge> badges = LinkedListMultimap.create();
 		int size = buf.readVarInt();
@@ -25,8 +33,8 @@ public record S2CSynchronizeBadges(Multimap<ResourceLocation, Badge> badges) {
 		return new S2CSynchronizeBadges(badges);
 	}
 
-	public void encode(FriendlyByteBuf buf) {
-		Map<ResourceLocation, Collection<Badge>> map = this.badges().asMap();
+	public static void encode(FriendlyByteBuf buf, S2CSynchronizeBadges packet) {
+		Map<ResourceLocation, Collection<Badge>> map = packet.badges().asMap();
 		buf.writeVarInt(map.size());
 		for (Map.Entry<ResourceLocation, Collection<Badge>> entry : map.entrySet()) {
 			buf.writeResourceLocation(entry.getKey());
@@ -36,11 +44,15 @@ public record S2CSynchronizeBadges(Multimap<ResourceLocation, Badge> badges) {
 		}
 	}
 
-	public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-		contextSupplier.get().enqueueWork(() -> {
+	public void handle(IPayloadContext context) {
+		context.enqueueWork(() -> {
 			BadgeManager.clear();
 			this.badges.forEach(BadgeManager::putPowerBadge);
 		});
-		contextSupplier.get().setPacketHandled(true);
+	}
+
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return TYPE;
 	}
 }

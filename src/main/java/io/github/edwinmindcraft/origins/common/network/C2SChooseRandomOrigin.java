@@ -10,29 +10,34 @@ import io.github.edwinmindcraft.origins.common.OriginsCommon;
 import io.github.edwinmindcraft.origins.common.registry.OriginRegisters;
 import net.minecraft.core.Holder;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
-public record C2SChooseRandomOrigin(ResourceLocation layer) {
+public record C2SChooseRandomOrigin(ResourceLocation layer) implements CustomPacketPayload {
+	public static final ResourceLocation ID = Origins.identifier("choose_random_origin");
+	public static final Type<C2SChooseRandomOrigin> TYPE = new Type<>(ID);
+	public static final StreamCodec<RegistryFriendlyByteBuf, C2SChooseRandomOrigin> STREAM_CODEC = StreamCodec.of(C2SChooseRandomOrigin::encode, C2SChooseRandomOrigin::decode);
+
 	public static C2SChooseRandomOrigin decode(FriendlyByteBuf buf) {
 		return new C2SChooseRandomOrigin(buf.readResourceLocation());
 	}
 
-	public void encode(FriendlyByteBuf buf) {
-		buf.writeResourceLocation(this.layer());
+	public static void encode(FriendlyByteBuf buf, C2SChooseRandomOrigin packet) {
+		buf.writeResourceLocation(packet.layer());
 	}
 
-	public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-		contextSupplier.get().enqueueWork(() -> {
-			ServerPlayer sender = contextSupplier.get().getSender();
-			if (sender == null) return;
-			IOriginContainer.get(sender).ifPresent(container -> {
+	public void handle(IPayloadContext context) {
+		context.enqueueWork(() -> {
+			ServerPlayer sender = (ServerPlayer) context.player();
+			// FIXME: OriginContainer.
+            IOriginContainer.get(sender).ifPresent(container -> {
 				Optional<Holder.Reference<OriginLayer>> layer = OriginsAPI.getLayersRegistry().getHolder(ResourceKey.create(OriginsDynamicRegistries.LAYERS_REGISTRY, this.layer())).filter(Holder::isBound);
 				if (layer.isEmpty()) {
 					Origins.LOGGER.warn("Player {} tried to select a random origin for missing layer {}", sender.getScoreboardName(), this.layer());
@@ -61,5 +66,10 @@ public record C2SChooseRandomOrigin(ResourceLocation layer) {
 			});
 		});
 		contextSupplier.get().setPacketHandled(true);
+	}
+
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return TYPE;
 	}
 }

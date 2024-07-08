@@ -11,6 +11,7 @@
     "SelectionInvulnerabilityMixin",
     "WaterBreathingMixin$CanBreatheInWater",
     "WaterBreathingMixin$UpdateAir",
+    "forge.CommonHooksMixin",
     "forge.ModifyPlayerSpawnPowerMixin"
   ],
   "client": [

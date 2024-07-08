@@ -12,19 +12,18 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 
 public record CraftingRecipeBadge(ResourceLocation spriteId,
-								  Recipe<CraftingContainer> recipe,
+								  RecipeHolder<Recipe<CraftingInput>> recipe,
 								  @Nullable Component prefix,
 								  @Nullable Component suffix) implements Badge {
 
@@ -43,7 +42,7 @@ public record CraftingRecipeBadge(ResourceLocation spriteId,
 	public NonNullList<ItemStack> peekInputs(float time) {
 		int seed = Mth.floor(time / 30);
 		NonNullList<ItemStack> inputs = NonNullList.withSize(9, ItemStack.EMPTY);
-		List<Ingredient> ingredients = this.recipe.getIngredients();
+		List<Ingredient> ingredients = this.recipe.value().getIngredients();
 		for (int index = 0; index < ingredients.size(); ++index) {
 			ItemStack[] stacks = ingredients.get(index).getItems();
 			if (stacks.length > 0) inputs.set(index, stacks[seed % stacks.length].copy());
@@ -52,7 +51,6 @@ public record CraftingRecipeBadge(ResourceLocation spriteId,
 	}
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
 	public List<ClientTooltipComponent> getTooltipComponents(ConfiguredPower<?, ?> powerType, int widthLimit, float time, Font textRenderer) {
 		List<ClientTooltipComponent> tooltips = new LinkedList<>();
         if (Minecraft.getInstance().level == null) {
@@ -60,16 +58,16 @@ public record CraftingRecipeBadge(ResourceLocation spriteId,
             return tooltips;
         }
 		if (Minecraft.getInstance().options.advancedItemTooltips) {
-			Component recipeIdText = Component.literal(this.recipe.getId().toString()).withStyle(ChatFormatting.DARK_GRAY);
+			Component recipeIdText = Component.literal(this.recipe.id().toString()).withStyle(ChatFormatting.DARK_GRAY);
 			widthLimit = Math.max(130, textRenderer.width(recipeIdText));
 			if (this.prefix != null) TooltipBadge.addLines(tooltips, this.prefix, textRenderer, widthLimit);
-			tooltips.add(new CraftingRecipeTooltipComponent(this.peekInputs(time), this.recipe.getResultItem(Minecraft.getInstance().level.registryAccess()).copy()));
+			tooltips.add(new CraftingRecipeTooltipComponent(this.peekInputs(time), this.recipe.value().getResultItem(Minecraft.getInstance().level.registryAccess()).copy()));
 			if (this.suffix != null) TooltipBadge.addLines(tooltips, this.suffix, textRenderer, widthLimit);
 			TooltipBadge.addLines(tooltips, recipeIdText, textRenderer, widthLimit);
 		} else {
 			widthLimit = 130;
 			if (this.prefix != null) TooltipBadge.addLines(tooltips, this.prefix, textRenderer, widthLimit);
-			tooltips.add(new CraftingRecipeTooltipComponent(this.peekInputs(time), this.recipe.getResultItem(Minecraft.getInstance().level.registryAccess()).copy()));
+			tooltips.add(new CraftingRecipeTooltipComponent(this.peekInputs(time), this.recipe.value().getResultItem(Minecraft.getInstance().level.registryAccess()).copy()));
 			if (this.suffix != null) TooltipBadge.addLines(tooltips, this.suffix, textRenderer, widthLimit);
 		}
 		return tooltips;

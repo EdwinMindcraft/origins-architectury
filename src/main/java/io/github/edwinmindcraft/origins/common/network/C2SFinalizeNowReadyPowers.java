@@ -7,16 +7,24 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.origins.api.origin.IOriginCallbackPower;
 import net.minecraft.core.Holder;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import javax.annotation.Nullable;
 import java.util.Set;
-import java.util.function.Supplier;
 
-public record C2SFinalizeNowReadyPowers(Set<ResourceKey<ConfiguredPower<?, ?>>> keys, boolean wasOrb) {
-	public static C2SFinalizeNowReadyPowers decode(FriendlyByteBuf buf) {
+public record C2SFinalizeNowReadyPowers(Set<ResourceKey<ConfiguredPower<?, ?>>> keys, boolean wasOrb) implements CustomPacketPayload {
+    public static final ResourceLocation ID = ApoliAPI.identifier("finalize_ready_powers");
+    public static final Type<C2SFinalizeNowReadyPowers> TYPE = new Type<>(ID);
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SFinalizeNowReadyPowers> STREAM_CODEC = StreamCodec.of(C2SFinalizeNowReadyPowers::encode, C2SFinalizeNowReadyPowers::decode);
+
+
+    public static C2SFinalizeNowReadyPowers decode(FriendlyByteBuf buf) {
         int keySize = buf.readInt();
         Set<ResourceKey<ConfiguredPower<?, ?>>> keys = Sets.newHashSet();
         for (int i = 0; i < keySize; ++i) {
@@ -26,19 +34,18 @@ public record C2SFinalizeNowReadyPowers(Set<ResourceKey<ConfiguredPower<?, ?>>> 
 		return new C2SFinalizeNowReadyPowers(keys, wasOrb);
 	}
 
-	public void encode(FriendlyByteBuf buf) {
-        buf.writeInt(this.keys().size());
-        for (ResourceKey<ConfiguredPower<?, ?>> key : this.keys()) {
+	public static void encode(FriendlyByteBuf buf, C2SFinalizeNowReadyPowers packet) {
+        buf.writeInt(packet.keys().size());
+        for (ResourceKey<ConfiguredPower<?, ?>> key : packet.keys()) {
             buf.writeResourceKey(key);
         }
-        buf.writeBoolean(this.wasOrb());
+        buf.writeBoolean(packet.wasOrb());
 	}
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-	public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-		contextSupplier.get().enqueueWork(() -> {
-			ServerPlayer sender = contextSupplier.get().getSender();
-			if (sender == null) return;
+	public void handle(IPayloadContext context) {
+		context.enqueueWork(() -> {
+			ServerPlayer sender = (ServerPlayer) context.player();
             for (ResourceKey<ConfiguredPower<?, ?>> key : this.keys()) {
                 @Nullable Holder<ConfiguredPower<?, ?>> configuredPower = (Holder<ConfiguredPower<?,?>>)(Object)ApoliAPI.getPowerContainer(sender).getPower(key);
                 if (configuredPower != null && configuredPower.isBound() && configuredPower.value().getFactory() instanceof IOriginCallbackPower callbackPower) {
@@ -46,6 +53,10 @@ public record C2SFinalizeNowReadyPowers(Set<ResourceKey<ConfiguredPower<?, ?>>> 
                 }
             }
 		});
-		contextSupplier.get().setPacketHandled(true);
 	}
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
 }

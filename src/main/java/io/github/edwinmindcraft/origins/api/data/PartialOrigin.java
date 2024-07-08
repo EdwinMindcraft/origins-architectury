@@ -24,6 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -84,7 +85,7 @@ public record PartialOrigin(@NotNull List<HolderSet<ConfiguredPower<?, ?>>> powe
 		@Override
 		public JsonElement serialize(PartialOrigin src, Type typeOfSrc, JsonSerializationContext context) {
 			JsonObject root = new JsonObject();
-			DataResult<JsonElement> powers = ConfiguredPower.CODEC_SET.set().encodeStart(JsonOps.INSTANCE, src.powers());
+			DataResult<JsonElement> powers = ConfiguredPower.REFERENCE_SET_CODEC.listOf().encodeStart(JsonOps.INSTANCE, src.powers());
 			if (powers.result().isEmpty())
 				throw new IllegalArgumentException("Failed to generate power list: " + powers.error().orElseThrow().message());
 			root.add("powers", powers.result().get());
@@ -119,7 +120,7 @@ public record PartialOrigin(@NotNull List<HolderSet<ConfiguredPower<?, ?>>> powe
 
 		@Contract("_ -> this")
 		public Builder powers(JsonArray powers) throws JsonParseException {
-			DataResult<Pair<List<HolderSet<ConfiguredPower<?, ?>>>, JsonElement>> decode = ConfiguredPower.CODEC_SET.set().decode(JsonOps.INSTANCE, powers);
+			DataResult<Pair<List<HolderSet<ConfiguredPower<?, ?>>>, JsonElement>> decode = ConfiguredPower.REFERENCE_SET_CODEC.listOf().decode(JsonOps.INSTANCE, powers);
 			if (decode.result().isEmpty())
 				throw new JsonParseException("Failed to deserialize powers: " + decode.error().orElseThrow().message());
 			this.powers.addAll(decode.result().get().getFirst());

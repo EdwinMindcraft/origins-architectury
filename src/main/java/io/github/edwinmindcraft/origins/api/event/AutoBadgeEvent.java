@@ -4,7 +4,7 @@ import io.github.apace100.apoli.integration.PowerLoadEvent;
 import io.github.apace100.origins.badge.Badge;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 import java.util.List;
 

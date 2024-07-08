@@ -1,32 +1,35 @@
 package io.github.edwinmindcraft.origins.common.network;
 
 import com.google.common.collect.ImmutableMap;
+import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.origins.api.OriginsAPI;
-import io.github.edwinmindcraft.origins.client.OriginsClientUtils;
 import io.github.edwinmindcraft.origins.common.OriginsCommon;
 import io.github.edwinmindcraft.origins.common.capabilities.OriginContainer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
-public record S2CSynchronizeOrigin(int entity, Map<ResourceLocation, ResourceLocation> origins, boolean hadAllOrigins) {
+public record S2CSynchronizeOrigin(int entity, Map<ResourceLocation, ResourceLocation> origins, boolean hadAllOrigins) implements CustomPacketPayload {
+	public static final ResourceLocation ID = ApoliAPI.identifier("sync_origin");
+	public static final Type<S2CSynchronizeOrigin> TYPE = new Type<>(ID);
+	public static final StreamCodec<RegistryFriendlyByteBuf, S2CSynchronizeOrigin> STREAM_CODEC = StreamCodec.of(S2CSynchronizeOrigin::encode, S2CSynchronizeOrigin::decode);
 
-	public void encode(FriendlyByteBuf buf) {
-		buf.writeInt(this.entity());
-		buf.writeVarInt(this.origins().size());
+	public static void encode(FriendlyByteBuf buf, S2CSynchronizeOrigin packet) {
+		buf.writeInt(packet.entity());
+		buf.writeVarInt(packet.origins().size());
 		this.origins().forEach((layer, origin) -> {
 			buf.writeResourceLocation(layer);
 			buf.writeResourceLocation(origin);
 		});
-		buf.writeBoolean(this.hadAllOrigins());
+		buf.writeBoolean(packet.hadAllOrigins());
 	}
 
 	public static S2CSynchronizeOrigin decode(FriendlyByteBuf buf) {
@@ -40,12 +43,13 @@ public record S2CSynchronizeOrigin(int entity, Map<ResourceLocation, ResourceLoc
 		return new S2CSynchronizeOrigin(entity, builder.build(), hadAll);
 	}
 
-	public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-		contextSupplier.get().enqueueWork(() -> {
-			Level level = DistExecutor.safeCallWhenOn(Dist.CLIENT, () -> OriginsClientUtils::getClientLevel);
+	public void handle(IPayloadContext context) {
+		context.enqueueWork(() -> {
+			Level level = Minecraft.getInstance().level;
 			if (level == null) return;
 			Entity entity = level.getEntity(this.entity());
 			if (entity == null) return;
+			// FIXME: OriginContainer.
 			entity.getCapability(OriginsAPI.ORIGIN_CONTAINER).ifPresent(x -> {
 				if (x instanceof OriginContainer container) {
 					container.acceptSynchronization(this.origins(), this.hadAllOrigins());
@@ -53,6 +57,10 @@ public record S2CSynchronizeOrigin(int entity, Map<ResourceLocation, ResourceLoc
 				}
 			});
 		});
-		contextSupplier.get().setPacketHandled(true);
+	}
+
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return null;
 	}
 }
